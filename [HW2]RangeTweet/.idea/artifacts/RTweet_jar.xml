@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact name="RTweet:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/RTweet_jar</output-path>
+    <root id="root">
+      <element id="archive" name="RTweet.jar">
+        <element id="module-output" name="RTweet" />
+      </element>
+      <element id="file-copy" path="$PROJECT_DIR$/lib/twitter4j-core-4.0.2.jar" />
+    </root>
+  </artifact>
+</component>
