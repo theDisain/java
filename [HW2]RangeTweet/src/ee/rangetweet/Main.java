@@ -27,7 +27,7 @@ public class Main {
             Query query = new Query();
 
             //here we can specify location PS:args[0]
-            getCoordinates("Kaevu 15A, Kuressaare".toString().replace(" ","%20"));
+            getCoordinates(args[0].toString().replace(" ","%20"));
 
             //cords[0]=23.4453515;
 
@@ -48,13 +48,13 @@ public class Main {
                 sizeoftweets+=result.getTweets().size();
 
                 for (Status tweet : tweets) {
-                    System.out.println( tweet.getCreatedAt() + "@" + tweet.getUser().getScreenName() + " - " + tweet.getText());
+                    System.out.println( tweet.getCreatedAt() + "@" + tweet.getUser().getScreenName() + " - " + tweet.getText() + tweet.getGeoLocation());
 
 
                 }
 
             } while((query = result.nextQuery()) != null);
-            System.out.println("Massiivis on : "+sizeoftweets);
+            System.out.println("loetud tweete on : "+sizeoftweets);
             System.out.println(cords[2]);
             System.out.println(cords[3]);
             System.out.println(cords[4]);
