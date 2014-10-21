@@ -27,18 +27,17 @@ public class Main {
             Query query = new Query();
 
             //here we can specify location PS:args[0]
-            getCoordinates("Tallinn".toString().replace(" ","%20"));
+            getCoordinates("Kaevu 15A, Kuressaare".toString().replace(" ","%20"));
 
             //cords[0]=23.4453515;
 
             //TODO-- implement radius
 
-
             //Set the position and range of finding tweets
-            query.setGeoCode(new GeoLocation(cords[0], cords[1]), 1, Query.KILOMETERS);
-
+            query.setGeoCode(new GeoLocation(cords[0], cords[1]), Range(), Query.KILOMETERS);
 
             //Result of twitter query
+
             QueryResult result;
             int sizeoftweets=0;
             //Tweets from twitter query
@@ -47,18 +46,22 @@ public class Main {
                 result = twitter.search(query);
                 tweets = result.getTweets();
                 sizeoftweets+=result.getTweets().size();
+
                 for (Status tweet : tweets) {
                     System.out.println( tweet.getCreatedAt() + "@" + tweet.getUser().getScreenName() + " - " + tweet.getText());
+
+
                 }
 
             } while((query = result.nextQuery()) != null);
-            System.out.println("Masiivis on : "+sizeoftweets);
+            System.out.println("Massiivis on : "+sizeoftweets);
             System.out.println(cords[2]);
             System.out.println(cords[3]);
             System.out.println(cords[4]);
             System.out.println(cords[5]);
             Range();
             System.out.println("Center of search coordinates are: " + cords[0] + "N " + cords[1] + "W");
+            System.out.println("Search radius is: " + Range() + " kilometers" );
         } catch (Exception e) {
             //catch the exception
             System.out.println("Failed to search tweets" + e);
@@ -112,16 +115,15 @@ public class Main {
         }
     }
 
-    private static void Range(){
+    private static Double Range(){
         final int R = 6371; //Radius of earth in kilometers
         Double latDistance = Math.toRadians(cords[3]-cords[2]);
         Double lonDistance = Math.toRadians(cords[5] - cords[4]);
         double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2) +
                 Math.cos(Math.toRadians(cords[2])) * Math.cos(Math.toRadians(cords[3])) *
-                Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+                        Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
         Double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        Double distance = R * c;
-        System.out.println("Radius of searched area: " + distance  + " kilometers");
+        return R * c;
 
-        }
+    }
 }
