@@ -15,7 +15,7 @@ import java.util.List;
 
 public class Main {
 
-    static Double[] cords=new Double[3];
+    static Double[] cords=new Double[6];
 
     public static void main(String[] args) {
 
@@ -31,27 +31,37 @@ public class Main {
 
             //cords[0]=23.4453515;
 
+            //TODO-- implement radius
+
+
             //Set the position and range of finding tweets
-            query.setGeoCode(new GeoLocation(cords[0], cords[1]), 0.1, Query.KILOMETERS);
+            query.setGeoCode(new GeoLocation(cords[0], cords[1]), 1, Query.KILOMETERS);
+
 
             //Result of twitter query
             QueryResult result;
-
+            int sizeoftweets=0;
             //Tweets from twitter query
             List<Status> tweets;
             do {
                 result = twitter.search(query);
                 tweets = result.getTweets();
-
+                sizeoftweets+=result.getTweets().size();
                 for (Status tweet : tweets) {
-                    System.out.println(/* tweet.getCreatedAt() + */"@" + tweet.getUser().getScreenName() + " - " + tweet.getText());
+                    System.out.println( tweet.getCreatedAt() + "@" + tweet.getUser().getScreenName() + " - " + tweet.getText());
                 }
 
             } while((query = result.nextQuery()) != null);
-
+            System.out.println("Masiivis on : "+sizeoftweets);
+            System.out.println(cords[2]);
+            System.out.println(cords[3]);
+            System.out.println(cords[4]);
+            System.out.println(cords[5]);
+            Range();
+            System.out.println("Center of search coordinates are: " + cords[0] + "N " + cords[1] + "W");
         } catch (Exception e) {
             //catch the exception
-            System.out.println("Failed to search tweets");
+            System.out.println("Failed to search tweets" + e);
             System.exit(-1);
         }
     }
@@ -66,7 +76,6 @@ public class Main {
 
             URLConnection con = url.openConnection();
 
-            //just-in-case things go bad....
             con.setReadTimeout( 2000 );
 
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
@@ -87,11 +96,32 @@ public class Main {
 
             cords[1] = Double.parseDouble(parse.getElementsByTagName("place").item(0).getAttributes().getNamedItem("lon").getTextContent());
 
-            //cords[2] = Double.parseDouble(parse.getElementsByTagName("place").item(0).getAttributes().getNamedItem("boundingbox").getTextContent());
+            String boundingbox = parse.getElementsByTagName("place").item(0).getAttributes().getNamedItem("boundingbox").getTextContent();
 
+            String[] parts = boundingbox.split(",");
 
+            for (int i=0;i<parts.length;i++){
+
+                cords[2+i] = Double.parseDouble(parts[i]);
+
+            }
+
+            // System.out.println("BOUNDIB BOX ON :"+parse.getElementsByTagName("place").item(0).getAttributes().getNamedItem("boundingbox").getTextContent());
         } catch (Exception e) {
             System.out.println("Failed to get coordinates!!!" + e);
         }
     }
+
+    private static void Range(){
+        final int R = 6371; //Radius of earth in kilometers
+        Double latDistance = Math.toRadians(cords[3]-cords[2]);
+        Double lonDistance = Math.toRadians(cords[5] - cords[4]);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2) +
+                Math.cos(Math.toRadians(cords[2])) * Math.cos(Math.toRadians(cords[3])) *
+                Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        Double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        Double distance = R * c;
+        System.out.println("Radius of searched area: " + distance  + " kilometers");
+
+        }
 }
