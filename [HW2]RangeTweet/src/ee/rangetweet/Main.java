@@ -1,7 +1,9 @@
 package ee.rangetweet;
 
+
 import org.w3c.dom.Document;
 import twitter4j.*;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.BufferedReader;
@@ -9,11 +11,15 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.List;
+import java.net.URLEncoder;
 
 public class Main {
 
     static Double[] cords=new Double[6];
+    public static int order = 1;
+    public static boolean exit = false;
 
     public static void main(String[] args) {
 
@@ -22,7 +28,7 @@ public class Main {
             //Twitter4j Query Object
             Query query = new Query();
             //here we can specify location PS:args[0]  Why make life harder?
-            getCoordinates("New York".toString().replace(" ", "%20"));
+            getCoordinates(args[0].toString().replace(" ", "%20"));
             //Set the position and range of finding tweets
             query.setGeoCode(new GeoLocation(cords[0], cords[1]), Range(), Query.KILOMETERS);
             //siin
@@ -33,6 +39,7 @@ public class Main {
             int sizeoftweets=0;
             //Tweets from twitter query
             List<Status> tweets;
+            List<Tweet> tweets2 = new ArrayList<Tweet>();
             int count = 0;
 
             int nroframiningrq=0;
@@ -40,15 +47,12 @@ public class Main {
             do {
                 //searches a page
                 //we would have to find out a way to know how many requests are left
-                //and then check if we have inafffff limits left
+                //and then check if we have enough limits left
                 //FIX-ME what a clasdkfjsdölkfjgr :D
 
-                //probleem on praegu selles, et ta ei tohiks seda searchi üldse teha kui ratelimit on käes
-                //aga ma ei tea seda ennem kui olen juba requesti ära teinud... tuleb mõelda
-
-                //kui nüüd siia järgmise käivitamisega tullakse siis saadakse response kätte sest 1 request on veel alles
+                //Gets a response if at least 1 request is left.
                 result=twitter.search(query);
-                //siis saan siin veel viimast korda lugeda et palju siis järgi on :D ilmselt NULL sest see esimene lugemine lõpetas viimse
+                //Last read of queries. Should return a NULL if things are bad.
                 nroframiningrq=result.getRateLimitStatus().getRemaining();
                 //it should also acount for remaining nr of req ---->0
                 //for example if we have 50 requests left but ratelimitstatus.remaining is 40
@@ -58,37 +62,44 @@ public class Main {
                     sizeoftweets += result.getTweets().size();
                     //prints out tweets from that page
                     for (Status tweet : tweets) {
-                        if (count < 1) {
-                            System.out.println(count + "" + tweet.getCreatedAt() + "@" + tweet.getUser().getScreenName() + " - " + tweet.getText());
+                        if (count < Integer.parseInt(args[1])) {
+                           // System.out.println(count + "" + tweet.getCreatedAt() + "@" + tweet.getUser().getScreenName() + " - " + tweet.getText()); DEPRECATED
+                            tweets2.add(new Tweet(tweet));
                             count++;
                         } else {
-
+                            exit = true;
                             break;
                         }
                     }
                 }
-                //nüüd jääb järgmiseks korraks üks request alles
+                // SHould leave a request for next time.
                 if(nroframiningrq==1){
                     break;
                 }
-            } while(((query = result.nextQuery()) != null));
-            //TODO - need võib välja kommenteerida hiljem siis :)
-            System.out.println("loetud tweete on : "+sizeoftweets);
+            } while(!exit);
+            //These were used for debug. I like clutter.
+            /*System.out.println("loetud tweete on : "+sizeoftweets);
             System.out.println(cords[2]);
             System.out.println(cords[3]);
             System.out.println(cords[4]);
-            System.out.println(cords[5]);
-
+            System.out.println(cords[5]);m
             //Range(); -- unneeded, Range() started off as a void
+            */
 
+            Tweet.sort(tweets2, args[2]);
+            for (Tweet t : tweets2) {
+                System.out.println();
+                System.out.println("@"+t.name + "   " + t.date.toLocaleString());
+                System.out.println(t.text);
+                System.out.println();
+            }
             System.out.println("Center of search coordinates are: " + cords[0] + "N " + cords[1] + "W");
             System.out.println("Search radius is: " + Range() + " kilometers" );
 
 
-
         } catch (Exception e) {
-            //catch the exception siis ärme siin viga prindi
-            //TODO - remove me BAMM I JUST FUCKIN DID IT
+            //catch the exception
+            //TODO - remove me , it's a SUCCESS!
             System.out.println("Failed to search tweets");
             System.exit(-1);
         }
@@ -98,7 +109,7 @@ public class Main {
         try
         {
             String inputLine;
-            URL url = new URL("http://nominatim.openstreetmap.org/search?q="+placeName+"&format=xml");
+            URL url = new URL("http://nominatim.openstreetmap.org/search?q="+URLEncoder.encode(placeName, "UTF-8")+"&format=xml");
             URLConnection con = url.openConnection();
             con.setReadTimeout( 2000 );
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
@@ -119,7 +130,7 @@ public class Main {
             // System.out.println("BOUNDIB BOX ON :"+parse.getElementsByTagName("place").item(0).getAttributes().getNamedItem("boundingbox").getTextContent());
         }
         catch (Exception e) {
-            System.out.println("Failed to get coordinates!!!" + e);
+            System.out.println("Failed to get coordinates.");
         }
     }
 
