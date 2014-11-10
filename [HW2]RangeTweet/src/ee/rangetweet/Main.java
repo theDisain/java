@@ -27,6 +27,7 @@ public class Main {
             Twitter twitter = new TwitterFactory().getInstance();
             //Twitter4j Query Object
             Query query = new Query();
+            query.setCount(Integer.parseInt(args[1]));
             //here we can specify location PS:args[0]  Why make life harder?
             getCoordinates(args[0].toString().replace(" ", "%20"));
             //Set the position and range of finding tweets
@@ -36,11 +37,11 @@ public class Main {
             //TODO tuleb välja uurida, veel ei tea
             //Result of twitter query
             QueryResult result;
-            int sizeoftweets=0;
+            //int sizeoftweets=0;
             //Tweets from twitter query
             List<Status> tweets;
             List<Tweet> tweets2 = new ArrayList<Tweet>();
-            int count = 0;
+            //int count = 0;
 
             int nroframiningrq=0;
 
@@ -59,21 +60,26 @@ public class Main {
                 //then we will still get an eerror because rate limit is exceeded by 10
                 if(result.getRateLimitStatus().getRemaining() != 0) {
                     tweets = result.getTweets();
-                    sizeoftweets += result.getTweets().size();
+                    //sizeoftweets += result.getTweets().size();
                     //prints out tweets from that page
                     for (Status tweet : tweets) {
-                        if (count < Integer.parseInt(args[1])) {
-                           // System.out.println(count + "" + tweet.getCreatedAt() + "@" + tweet.getUser().getScreenName() + " - " + tweet.getText()); DEPRECATED
+
+                        if (!exit) {
                             tweets2.add(new Tweet(tweet));
-                            count++;
-                        } else {
+                            // System.out.println(count + "" + tweet.getCreatedAt() + "@" + tweet.getUser().getScreenName() + " - " + tweet.getText()); For more tweets
+
+                            //count++;
+                        }
+                        /*else {
                             exit = true;
                             break;
-                        }
+                        }*/
                     }
                 }
                 // SHould leave a request for next time.
                 if(nroframiningrq==1){
+                    System.out.println("Something is fucky");
+                    exit = true;
                     break;
                 }
             } while(!exit);
@@ -100,7 +106,7 @@ public class Main {
         } catch (Exception e) {
             //catch the exception
             //TODO - remove me , it's a SUCCESS!
-            System.out.println("Failed to search tweets");
+            System.out.println("Failed to search tweets" + e);
             System.exit(-1);
         }
     }

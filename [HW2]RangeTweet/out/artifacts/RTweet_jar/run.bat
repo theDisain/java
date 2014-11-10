@@ -1,2 +1,2 @@
-java -jar RTweet.jar "Tallinn" -8 "date asc"
+java -jar RTweet.jar "Kuressaare" 15 "date"
 PAUSE
