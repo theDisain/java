@@ -5,20 +5,18 @@ import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+/**
+ * @web http://java-buddy.blogspot.com/
+ */
 public class Main extends Application {
 
     @Override
-    public void start(final Stage primaryStage) {
+    public void start(Stage primaryStage) {
 
         Canvas canvas = new Canvas(400, 400);
         final GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
@@ -54,53 +52,35 @@ public class Main extends Application {
                     }
                 });
 
-        MenuBar menuBar = new MenuBar();
-        Menu menuFile = new Menu("File");
-        Menu menuView = new Menu("View");
-        MenuItem menuFileSave = new MenuItem("Save");
-        menuBar.getMenus().add(menuFile);
-        menuBar.getMenus().add(menuView);
-        menuFile.getItems().add(menuFileSave);
-
-        BorderPane root = new BorderPane();
-
+        StackPane root = new StackPane();
         root.getChildren().add(canvas);
-        root.setTop(menuBar);
-        final Scene scene = new Scene(root, 400, 400);
-        scene.addEventHandler(KeyEvent.KEY_PRESSED,
-                new EventHandler<KeyEvent>(){
-                    @Override
-                    public void handle(KeyEvent t) {
-                        if(t.getCode()== KeyCode.ESCAPE){
-                            Stage st = (Stage)primaryStage.getScene().getWindow();
-                            st.close();
-                        }
-                    }
-                });
-        primaryStage.setTitle("iapb134301");
+        Scene scene = new Scene(root, 400, 400);
+        primaryStage.setTitle("java-buddy.blogspot.com");
         primaryStage.setScene(scene);
         primaryStage.show();
-
     }
 
     public static void main(String[] args) {
         launch(args);
-
     }
 
     private void initDraw(GraphicsContext gc){
         double canvasWidth = gc.getCanvas().getWidth();
         double canvasHeight = gc.getCanvas().getHeight();
 
+        gc.setFill(Color.LIGHTGRAY);
+        gc.setStroke(Color.BLACK);
+        gc.setLineWidth(5);
+
         gc.fill();
         gc.strokeRect(
-                0,              //x == upper left corner
-                0,              //y == upper left corner
-                canvasWidth,    //width
-                canvasHeight);  //height
+                0,              //x of the upper left corner
+                0,              //y of the upper left corner
+                canvasWidth,    //width of the rectangle
+                canvasHeight);  //height of the rectangle
 
         gc.setFill(Color.RED);
-        gc.setStroke(Color.GREEN);
+        gc.setStroke(Color.BLUE);
         gc.setLineWidth(1);
 
     }
