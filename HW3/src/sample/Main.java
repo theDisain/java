@@ -37,9 +37,8 @@ public class Main extends Application {
     @Override
     public void start(final Stage primaryStage) {
 
-        final Canvas canvas = new Canvas(400,400);
-        canvas.setStyle("-fx-background: rgba(0, 30, 0, 0);");
-        final GraphicsContext g = canvas.getGraphicsContext2D();
+        final Canvas canvas = new Canvas(1680,1050); //Creates a new canvas in the program.
+        final GraphicsContext g = canvas.getGraphicsContext2D(); //Initializes GraphicsContext.
         initDraw(g);
 
         canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED,
@@ -49,7 +48,7 @@ public class Main extends Application {
                         if(event.isSecondaryButtonDown()){
                             double x = event.getSceneX();
                             double y = event.getSceneY();
-                            moveCanvas(x,y, g);
+                            moveCanvas(x,y, g); //Current way of moving objects... Or well, basically moving the canvas.
                             System.out.println("RIGHT MOUSE BTN DOWN");
                         }
                     }
@@ -66,7 +65,7 @@ public class Main extends Application {
                 });
 
 
-        MenuBar menuBar = new MenuBar();
+        MenuBar menuBar = new MenuBar(); //Menu bar init. Below i add different parts of the menu that will go into the menubar, attach it to the top and create the necessary ActionEvents.
         Menu menuFile = new Menu("File");
         Menu menuFunct = new Menu("Functions");
         MenuItem Rect = new MenuItem("Rectangle");
@@ -95,17 +94,17 @@ public class Main extends Application {
                 fc.setInitialDirectory(new File("res/maps"));
                 fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG","*.png"));
                 fc.setTitle("Save image");
-                File file = fc.showSaveDialog(primaryStage);
+                File file = fc.showSaveDialog(primaryStage); //One of the built in dialogs.
                 if(file != null){
-                    Double CanvasDoubleValueWidth = canvas.getWidth();
+                    Double CanvasDoubleValueWidth = canvas.getWidth(); //Casting test
                     Double CanvasDoubleValueHeight = canvas.getHeight();
                     Integer CanvasIntValueWidth = CanvasDoubleValueWidth.intValue();
                     Integer CanvasIntValueHeight = CanvasDoubleValueHeight.intValue();
-                    WritableImage wi = new WritableImage(CanvasIntValueWidth, CanvasIntValueHeight);
+                    WritableImage wi = new WritableImage(CanvasIntValueWidth, CanvasIntValueHeight); //Testing saving files. Step one: make a image you can write.
                     try {
-                        SnapshotParameters sp = new SnapshotParameters();
-                        sp.setFill(Color.TRANSPARENT);
-                        ImageIO.write(SwingFXUtils.fromFXImage(canvas.snapshot(sp, wi), null), "png", file);
+                        SnapshotParameters sp = new SnapshotParameters(); //Take a snapshot.
+                        sp.setFill(Color.TRANSPARENT); //A snapshot is essentially a new layer. Default fill is black. That is no good.
+                        ImageIO.write(SwingFXUtils.fromFXImage(canvas.snapshot(sp, wi), null), "png", file); //Using swing, grabs a writable image of the snapshot.
                     }
                     catch (IOException e) {
                         e.printStackTrace();
@@ -138,11 +137,11 @@ public class Main extends Application {
         });
 
 
-        BorderPane root = new BorderPane();
+        BorderPane root = new BorderPane(); //Borderpane init. The root to which all connects to.
 
         root.getChildren().add(canvas);
         root.setTop(menuBar);
-        final Scene scene = new Scene(root, 400, 400);
+        final Scene scene = new Scene(root, 400, 400); //New scene, to which i attach different key functions like backspace for clearing and esc for closing.
         scene.addEventHandler(KeyEvent.KEY_PRESSED,
                 new EventHandler<KeyEvent>() {
                     @Override
@@ -176,7 +175,7 @@ public class Main extends Application {
                         }
                     }
                 });
-        primaryStage.setTitle("iapb134301");
+        primaryStage.setTitle("Kimpo by Ain-Joonas Toose (iapb134301)");
         primaryStage.setScene(scene);
         primaryStage.show();
 
