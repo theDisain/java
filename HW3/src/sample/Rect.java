@@ -1,12 +1,18 @@
 package sample;
 
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 /**
  * Created by Ain-Joonas on 16.11.2014.
  */
-public class MyRect extends Rectangle {
-    public MyRect(double startX, double startY) {
+public class Rect extends Rectangle {
+    double startX;
+    double startY;
+
+    public Rect(double startX, double startY) {
         this.startX = startX;
         this.startY = startY;
     }

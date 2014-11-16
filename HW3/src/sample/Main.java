@@ -3,6 +3,7 @@ import javafx.application.Application;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
@@ -22,13 +23,16 @@ import javafx.stage.WindowEvent;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
-
+import javafx.scene.shape.Rectangle;
 
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 
 public class Main extends Application {
+    double x0,y0,x1,y1;
+    Rectangle Rect1;
+    Group stuff;
 
     @Override
     public void start(final Stage primaryStage) {
@@ -150,22 +154,21 @@ public class Main extends Application {
                     }
                 });
         scene.addEventHandler(KeyEvent.KEY_PRESSED,
-                new EventHandler<KeyEvent>(){
+                new EventHandler<KeyEvent>() {
                     @Override
                     public void handle(KeyEvent t) {
-                        if(t.getCode()== KeyCode.ESCAPE){
+                        if (t.getCode() == KeyCode.ESCAPE) {
                             Action response = Dialogs.create()
                                     .owner(primaryStage)
                                     .title("Exit Dialog")
                                     .masthead("You are about to exit the program.")
                                     .message("Are you sure?")
-                                    .showConfirm()
-                                    ;
+                                    .showConfirm();
 
 
                             if (response == Dialog.ACTION_YES) {
                                 // ... user chose YES
-                                Stage st = (Stage)primaryStage.getScene().getWindow();
+                                Stage st = (Stage) primaryStage.getScene().getWindow();
                                 st.close();
                             } else response.isDisabled();
 
@@ -202,19 +205,34 @@ public class Main extends Application {
 
     }
     public void Rect(final GraphicsContext gc){
+        gc.getCanvas().addEventHandler(MouseEvent.MOUSE_PRESSED,
+                new EventHandler<MouseEvent>(){
 
-        EventHandler<MouseEvent> mouseHandler = new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                if(event.getEventType() == MouseEvent.MOUSE_PRESSED){
-                    gc.strokeRect(event.getX(),event.getY(),event.getX(), event.getY());
-                }
-                else  if(event.getEventType() == MouseEvent.MOUSE_DRAGGED){
-                    gc.strokeRect(event.getX(),event.getY(),event.getX(),event.getY());
-                }
+                    @Override
+                    public void handle(MouseEvent event) {
+                        Rect r = new Rect(event.getX(),event.getY());
+                        System.out.println("rectclick");
+                    }
+                });
 
-            }
-        };
+        gc.getCanvas().addEventHandler(MouseEvent.MOUSE_DRAGGED,
+                new EventHandler<MouseEvent>() {
+
+                    @Override
+                    public void handle(MouseEvent event) {
+                        Rect r = (Rect) stuff.getChildren().get(stuff.getChildren().size() - 1);
+                        r.setWidthHeight(event.getX(), event.getY());
+                        System.out.println("rect drag");
+                    }
+                });
+
+        gc.getCanvas().addEventHandler(MouseEvent.MOUSE_RELEASED,
+                new EventHandler<MouseEvent>() {
+
+                    @Override
+                    public void handle(MouseEvent event) {
+                    }
+                });
     }
     public void Line(final GraphicsContext gc){
         gc.getCanvas().addEventHandler(MouseEvent.MOUSE_PRESSED,
