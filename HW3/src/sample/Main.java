@@ -1,6 +1,7 @@
 package sample;
 import javafx.application.Application;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
@@ -15,14 +16,15 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
+import org.controlsfx.control.action.Action;
+import org.controlsfx.dialog.Dialog;
+import org.controlsfx.dialog.Dialogs;
+
 
 import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 
@@ -59,9 +61,9 @@ public class Main extends Application {
                     }
                 });
 
+
         MenuBar menuBar = new MenuBar();
         Menu menuFile = new Menu("File");
-        Menu menuView = new Menu("View");
         Menu menuFunct = new Menu("Functions");
         MenuItem Rect = new MenuItem("Rectangle");
         Rect.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
@@ -82,9 +84,9 @@ public class Main extends Application {
         MenuItem menuFileSave = new MenuItem("Save");
         menuBar.getMenus().add(menuFile);
         menuFile.getItems().add(menuFileSave);
-        menuFileSave.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
+        menuFileSave.setOnAction(new EventHandler<ActionEvent>() {
             @Override
-            public void handle(javafx.event.ActionEvent event) {
+            public void handle(ActionEvent event) {
                 FileChooser fc = new FileChooser();
                 fc.setInitialDirectory(new File("res/maps"));
                 fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG","*.png"));
@@ -95,7 +97,7 @@ public class Main extends Application {
                     Double CanvasDoubleValueHeight = canvas.getHeight();
                     Integer CanvasIntValueWidth = CanvasDoubleValueWidth.intValue();
                     Integer CanvasIntValueHeight = CanvasDoubleValueHeight.intValue();
-                    WritableImage wi = new WritableImage(CanvasIntValueWidth, CanvasIntValueWidth);
+                    WritableImage wi = new WritableImage(CanvasIntValueWidth, CanvasIntValueHeight);
                     try {
                         SnapshotParameters sp = new SnapshotParameters();
                         sp.setFill(Color.TRANSPARENT);
@@ -111,6 +113,25 @@ public class Main extends Application {
         menuBar.getMenus().add(menuFunct);
         menuFunct.getItems().add(Rect);
         menuFunct.getItems().add(Line);
+        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                Action response = Dialogs.create()
+                        .owner(primaryStage)
+                        .title("Exit Dialog")
+                        .masthead("You are about to exit the program.")
+                        .message("Are you sure?")
+                        .showConfirm()
+                        ;
+
+
+                if (response == Dialog.ACTION_YES) {
+                    // ... user chose YES
+                    Stage st = (Stage)primaryStage.getScene().getWindow();
+                    st.close();
+                } else response.isDisabled();
+            }
+        });
 
 
         BorderPane root = new BorderPane();
@@ -133,8 +154,22 @@ public class Main extends Application {
                     @Override
                     public void handle(KeyEvent t) {
                         if(t.getCode()== KeyCode.ESCAPE){
-                            Stage st = (Stage)primaryStage.getScene().getWindow();
-                            st.close();
+                            Action response = Dialogs.create()
+                                    .owner(primaryStage)
+                                    .title("Exit Dialog")
+                                    .masthead("You are about to exit the program.")
+                                    .message("Are you sure?")
+                                    .showConfirm()
+                                    ;
+
+
+                            if (response == Dialog.ACTION_YES) {
+                                // ... user chose YES
+                                Stage st = (Stage)primaryStage.getScene().getWindow();
+                                st.close();
+                            } else response.isDisabled();
+
+
                         }
                     }
                 });
@@ -150,9 +185,6 @@ public class Main extends Application {
     }
 
     private void initDraw(GraphicsContext gc){
-        double canvasWidth = gc.getCanvas().getWidth();
-        double canvasHeight = gc.getCanvas().getHeight();
-
         gc.setFill(Color.WHITE);
         gc.fillRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
         gc.setStroke(Color.GREEN);
