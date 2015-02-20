@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/JOOP.iml" filepath="$PROJECT_DIR$/JOOP.iml" />
       <module fileurl="file://$PROJECT_DIR$/hw/hw.iml" filepath="$PROJECT_DIR$/hw/hw.iml" />
-      <module fileurl="file://$PROJECT_DIR$/joop02.iml" filepath="$PROJECT_DIR$/joop02.iml" />
+      <module fileurl="file://$PROJECT_DIR$/joop03/joop03.iml" filepath="$PROJECT_DIR$/joop03/joop03.iml" />
     </modules>
   </component>
 </project>
