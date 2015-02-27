@@ -8,7 +8,7 @@ import java.util.*;
  */
 public class BankTest {
     public static void main(String[] args){
-        Card credit1 = new CreditCard(new BigDecimal(10000));
+        Card credit1 = new CreditCard(new BigDecimal(5000));
         Card card = new Card();
         card.payment(new BigDecimal(10.55));
         Calendar date = new GregorianCalendar(Locale.getDefault());
@@ -17,5 +17,6 @@ public class BankTest {
         cards.add(card);
         PaymentProcessor processor = new PaymentProcessor();
         processor.process(cards);
+        Person p = BankClientGateway.getPerson();
     }
 }
