@@ -5,6 +5,10 @@
       <module fileurl="file://$PROJECT_DIR$/JOOP.iml" filepath="$PROJECT_DIR$/JOOP.iml" />
       <module fileurl="file://$PROJECT_DIR$/hw/hw.iml" filepath="$PROJECT_DIR$/hw/hw.iml" />
       <module fileurl="file://$PROJECT_DIR$/joop03/joop03.iml" filepath="$PROJECT_DIR$/joop03/joop03.iml" />
+      <module fileurl="file://$PROJECT_DIR$/joop05/joop05.iml" filepath="$PROJECT_DIR$/joop05/joop05.iml" />
+      <module fileurl="file://$PROJECT_DIR$/joop06/joop06.iml" filepath="$PROJECT_DIR$/joop06/joop06.iml" />
+      <module fileurl="file://$PROJECT_DIR$/reisibüroo/reisibüroo.iml" filepath="$PROJECT_DIR$/reisibüroo/reisibüroo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/test/test.iml" filepath="$PROJECT_DIR$/test/test.iml" />
     </modules>
   </component>
 </project>
