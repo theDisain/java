@@ -2,11 +2,14 @@ package dancers;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Dancer {
+public class Dancer implements IDancer {
 	private int height;
-	private int uniqueId;
-	private boolean sex;
+	private int ID;
+	private boolean isMale;
 	private static AtomicInteger nextId = new AtomicInteger();
+	public Dancer left = null ;
+	public Dancer right = null;
+	public int treeHeight;
 	
 	public int getHeight() {
 		return height;
@@ -16,28 +19,28 @@ public class Dancer {
 		this.height = height;
 	}
 
-	public int getUniqueId() {
-		return uniqueId;
+	public int getID() {
+		return ID;
 	}
 
 	public void setUniqueId(int uniqueId) {
-		this.uniqueId = uniqueId;
+		this.ID = ID;
 	}
 
-	public boolean isSex() {
-		return sex;
+	public boolean isMale() {
+		return isMale;
 	}
 
 	@Override
 	public String toString() {
-		return "Dancer [height=" + height + ", uniqueId=" + uniqueId + ", sex=" + sex + "] \n";
+		return "Dancer [height=" + height + ", IDd=" + ID + ", isMale=" + isMale + "] \n";
 	}
 
-	public Dancer(int height, boolean sex){
+	public Dancer(int height, boolean isMale){
 		this.height = height;
-		this.sex = sex;
-		uniqueId = nextId.incrementAndGet();
+		this.isMale = isMale;
+		ID = nextId.incrementAndGet();
 	}
-	
-
+	public Dancer(){
+	}
 }
