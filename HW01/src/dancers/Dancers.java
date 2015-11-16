@@ -1,38 +1,51 @@
 package dancers;
 
 import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Created by rapka on 15.11.2015.
+ */
 public class Dancers implements IDancers {
 
-    private DancerTree men = new DancerTree();
-    private DancerTree women = new DancerTree();
+    private RedBlackTree men = new RedBlackTree();
+    private RedBlackTree women = new RedBlackTree();
 
-    @Override
-    public SimpleEntry<IDancer, IDancer> findPartnerFor(IDancer d)
+    public SimpleEntry<IDancer, IDancer> findPartnerFor(IDancer dancer)
             throws IllegalArgumentException {
-        Dancer dancer = new Dancer(d.getHeight(),d.isMale());
-        if(dancer.isMale()){
-            Dancer partner = women.getPartner(dancer);
-            if(partner == null)
-                men.addDancer(dancer);
-            else
-                return new SimpleEntry<IDancer, IDancer>(dancer,partner);
+        IDancer partner;
+
+        if (dancer.getHeight() <= 0) throw new IllegalArgumentException();
+
+        if (dancer.isMale()) {
+            partner = women.findPartner(dancer.isMale(), dancer.getHeight());
+            if (partner == null) {
+                men.insert(dancer);
+                return null;
+            }
+        } else {
+            partner = men.findPartner(dancer.isMale(), dancer.getHeight());
+            if (partner == null) {
+                women.insert(dancer);
+                return null;
+            }
         }
-        else if(!dancer.isMale()){
-            Dancer partner = men.getPartner(dancer);
-            if(partner == null)
-                women.addDancer(dancer);
-            else return new SimpleEntry<IDancer, IDancer>(dancer,partner);
-        }
-        else throw new IllegalArgumentException();
-        return null;
+        return new SimpleEntry<IDancer, IDancer>(dancer, partner);
     }
 
     @Override
     public List<IDancer> returnWaitingList() {
-        // TODO Auto-generated method stub
-        return null;
+        List<IDancer> list = new ArrayList<IDancer>() {{
+            addAll(men.getDancersList());
+            addAll(women.getDancersList());
+        }};
+        list.sort(Dancer.compareHeight);
+        return list;
     }
-
+    public String returnDancersList(RedBlackTree tree) {
+        return tree.toString();
+    }
+    public RedBlackTree getMen() {return men;}
+    public RedBlackTree getWomen() {return women;}
 }

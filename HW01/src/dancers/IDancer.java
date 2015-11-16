@@ -1,8 +1,7 @@
 package dancers;
 
 /**
- * API specification for the objects
- * representing various dancers.
+ * Created by rapka on 15.11.2015.
  */
 public interface IDancer {
     public int getID();

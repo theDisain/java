@@ -1,18 +1,14 @@
 package dancers;
 
-import java.util.AbstractMap.SimpleEntry;
+import java.util.AbstractMap;
 import java.util.List;
 
+/**
+ * Created by rapka on 15.11.2015.
+ */
 public interface IDancers {
-    public SimpleEntry<IDancer,IDancer> findPartnerFor(IDancer d)
-        throws IllegalArgumentException;
+    public AbstractMap.SimpleEntry<IDancer,IDancer> findPartnerFor(IDancer d)
+            throws IllegalArgumentException;
 
-    /*
-     * Returns waiting list as an array (both men and women)
-     * Ordered shortest --> longest
-     * If man and woman are having the same height,
-     * then ordering should be man, woman
-     */
     public List<IDancer> returnWaitingList();
-
 }

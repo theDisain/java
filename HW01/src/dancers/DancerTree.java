@@ -1,131 +1,426 @@
 package dancers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DancerTree {
     private Dancer root;
+    protected Dancer bTeam;
+    protected int diff;
+    Dancer deletedNodeRoot = null;
+    public DancerTree() {root = null;}
+    public void insert(Dancer node) {insertToTree(this.root,node);}
 
-    public DancerTree() {
-        root = null;
-    }
-    public Dancer getPartner(Dancer dancer){
-        return null;
-    }
-    public void addDancer(Dancer dancer){
-        addDancer(dancer);
-    }
-    public Dancer addDancer(int x, Dancer dancer){
-        if(dancer == null)
-            dancer = new Dancer();
-        else if(x < dancer.getHeight()) {
-            dancer.left = addDancer(x, dancer.left);
-            if (dancer.left.getHeight() - dancer.right.getHeight() == 2 ){
-                if(x < dancer.left.getHeight())
-                    dancer = rotateWithLeftChild(dancer);
-                else
-                    dancer = rotateWithRightChild(dancer);
+    public void insertToTree(Dancer root, Dancer newDancer) {
+        if (root == null) {
+            this.root = newDancer;
+        } else {
+            if (newDancer.height < root.height) {
+                if (root.left == null) {
+                    root.left = newDancer;
+                    newDancer.parent = root;
+
+                    balanceTreeRecursive(root);
+                } else {
+                    insertToTree(root.left, newDancer);
+                }
+            } else if (newDancer.height > root.height) {
+                if (root.right == null) {
+                    root.right = newDancer;
+                    newDancer.parent = root;
+                    balanceTreeRecursive(root);
+                } else {
+                    insertToTree(root.right, newDancer);
+                }
+            } else if (newDancer.height == root.height) {
+                if (!root.isMale() && newDancer.isMale()) {
+                    Dancer temp = new Dancer();
+                    temp.replaceDancer(root);
+                    temp.setEqualHeightDancers(root.getEqualHeightDancers());
+                    root.replaceDancer(newDancer);
+
+                    List<Dancer> dancers = temp.getEqualHeightDancers();
+                    if (dancers == null) dancers = new ArrayList<>();
+                    temp.setInList(true);
+                    dancers.add(temp);
+                    root.setEqualHeightDancers(dancers);
+                    balanceTreeRecursive(root);
+                } else {
+                    List<Dancer> Dancers = root.getEqualHeightDancers();
+                    if (Dancers == null) Dancers = new ArrayList<>();
+                    newDancer.setInList(true);
+                    Dancers.add(newDancer);
+                    root.setEqualHeightDancers(Dancers);
+                    balanceTreeRecursive(root);
+                }
+
             }
         }
-        return dancer;
     }
 
-    private Dancer insert(int x, Dancer node) {
-        if (node == null)
-            node = new Dancer();
-        else if (x < node.treeHeight) {
-            node.left = insert(x, node.left);
-            if (height(node.left) - height(node.right) == 2) {
-                if (x < node.left.treeHeight)
-                    node = rotateWithLeftChild(node);
-                else
-                    node = doubleWithLeftChild(node);
+    public void balanceTreeRecursive(Dancer dancer) {
+
+        setBalance(dancer);
+        int balance = dancer.balance;
+        if (balance == -2) {
+            if (nodeHeight(dancer.left.left) >= nodeHeight(dancer.left.right)) {
+                dancer = rotateRight(dancer);
+            } else {
+                dancer = doubleRotateLeftRight(dancer);
+            }
+        } else if (balance == 2) {
+            if (nodeHeight(dancer.right.right) >= nodeHeight(dancer.right.left)) {
+                dancer = rotateLeft(dancer);
+            } else {
+                dancer = doubleRotateRightLeft(dancer);
             }
         }
-        else if (x > node.getHeight())
-
-        {
-
-            node.right = insert(x, node.right);
-            if (height(node.right) - height(node.left) == 2)
-                if (x > node.right.getHeight())
-                    node = rotateWithRightChild(node);
-                else
-                    node = doubleWithRightChild(node);
-
-        } else   // Duplicate; do nothing
-            node.treeHeight = max(height(node.left), height(node.right)) + 1;
-
-        return node;
-
+        if (dancer.parent != null) {
+            balanceTreeRecursive(dancer.parent);
+        } else {
+            this.root = dancer;
+        }
+    }
+    public void  remove(int val) {
+        removeDancer(this.root, val);
     }
 
-    public boolean isEmpty() {
-        return root == null;
+    public void removeDancer(Dancer dancer, int val) {
+        if (dancer != null) {
+            if (dancer.height > val) {
+                removeDancer(dancer.left, val);
+            }
+            else if (dancer.height < val) {
+                removeDancer(dancer.right, val);
+            }
+            else if (dancer.height == val) {
+                removeFoundNode(dancer);
+            }
+        }
     }
 
-    public void makeEmpty() {
-        root = null;
+    public Dancer eradicateWomen(int height) {
+        Dancer copiedResult;
+        diff = Integer.MAX_VALUE;
+        bTeam = null;
+        Dancer back = eradicateWomen(this.root, height);
+        if (back != null) {
+            copiedResult = new Dancer(back);
+
+        } else {
+            copiedResult = back;
+        }
+        if (deletedNodeRoot != null) {
+            deletedNodeRoot.getEqualHeightDancers().remove(back);
+        }
+        if (bTeam != null) {
+            Dancer node = new Dancer();
+            List<Dancer> Dancers = bTeam.getEqualHeightDancers();
+            if (Dancers != null) {
+                for (Dancer d : Dancers) {
+                    if (d.isMale()) {
+                        node.replaceDancer(d);
+                        Dancers.remove(d);
+                        break;
+                    }
+                    if (node.getHeight() == 0) {
+                        Dancer dd = Dancers.get(0);
+                        node.replaceDancer(dd);
+                        Dancers.remove(dd);
+                    }
+                    List<Dancer> dancers1 = new ArrayList<>();
+                    for (Dancer Dancer : Dancers) {
+                        dancers1.add(Dancer);
+                    }
+                    node.setEqualHeightDancers(dancers1);
+                    removeFoundNode(bTeam);
+                    insert(node);
+                }
+            } else {
+                removeFoundNode(bTeam);
+            }
+        }
+        return copiedResult;
     }
 
-    private int height(Dancer node) {
-        return node == null ? -1 : node.treeHeight;
+    public Dancer eradicateWomen(Dancer Dancer, int maleHeight) {
+        if (Dancer == null) {
+            return bTeam;
+        }
+        if (Dancer.getHeight() >= maleHeight) {
+            return eradicateWomen(Dancer.left, maleHeight);
+        } else if (Dancer.getHeight() < maleHeight) {
+            if (Dancer.isMale()) {
+                try {
+                    List<Dancer> Dancers = Dancer.getEqualHeightDancers();
+                    for (Dancer d : Dancers) {
+                        int newDiff = Math.abs(d.getHeight() - maleHeight);
+                        if (!d.isMale() && newDiff < diff && newDiff != 0) {
+                            deletedNodeRoot = Dancer;
+                            bTeam = d;
+                            diff = newDiff;
+                        }
+                    }
+                } catch (Exception e) {
+                    Dancer temp = eradicateWomen(Dancer.right, maleHeight);
+                    if (temp == null) {
+                        return eradicateWomen(Dancer.left, maleHeight);
+                    } else {
+                        return temp;
+                    }
+
+                }
+            } else {
+                int newDiff = Math.abs(Dancer.getHeight() - maleHeight);
+                if (newDiff < diff && newDiff != 0) {
+                    bTeam = Dancer;
+                    diff = newDiff;
+                }
+            }
+            return eradicateWomen(Dancer.right, maleHeight);
+        }
+        return bTeam;
+    }
+    public Dancer eradicateMen(int height) {
+        Dancer copiedResult;
+        bTeam = null;
+        diff = Integer.MAX_VALUE;
+        Dancer back = eradicateMen(this.root, height);
+        if (back != null) {
+            copiedResult = new Dancer(back);
+
+        } else {
+            copiedResult = back;
+        }
+        if (deletedNodeRoot != null) {
+            deletedNodeRoot.getEqualHeightDancers().remove(back);
+        }
+        if (bTeam != null) {
+            Dancer node = new Dancer();
+            List<Dancer> Dancers = bTeam.getEqualHeightDancers();
+
+            if (Dancers != null) {
+                removeFoundNode(bTeam);
+                for (int i = 0; i < Dancers.size(); i++) {
+                    Dancer d = Dancers.get(i);
+                    if (d.isMale()) {
+                        node.replaceDancer(d);
+                        Dancers.remove(d);
+                        break;
+                    }
+                    if (node.getHeight() == 0) {
+                        Dancer dd = Dancers.get(0);
+                        node.replaceDancer(dd);
+                        Dancers.remove(dd);
+                    }
+                    List<Dancer> dancers1 = new ArrayList<>();
+                    for (Dancer Dancer : Dancers) {
+                        dancers1.add(Dancer);
+                    }
+                    node.setEqualHeightDancers(dancers1);
+                    insert(node);
+                }
+
+
+            } else {
+                removeFoundNode(bTeam);
+
+            }
+        }
+
+        return copiedResult;
+    }
+    public Dancer eradicateMen(Dancer dancer, int femaleHeight) {
+        if (dancer == null) {
+            return bTeam;
+        }
+
+        if (dancer.getHeight() > femaleHeight) {
+            if (!dancer.isMale()) {
+                try {
+                    List<Dancer> Dancers = dancer.getEqualHeightDancers();
+                    for (Dancer d : Dancers) {
+                        int newDiff = Math.abs(d.getHeight() - femaleHeight);
+                        if (d.isMale() && newDiff < diff && newDiff != 0) {
+                            bTeam = d;
+                            deletedNodeRoot = dancer;
+                            diff = newDiff;
+                        }
+                    }
+                } catch (Exception e) {
+                }
+
+            } else {
+                int newDiff = Math.abs(dancer.getHeight() - femaleHeight);
+                if (newDiff < diff && newDiff != 0) {
+                    bTeam = dancer;
+                    diff = newDiff;
+                }
+            }
+            return eradicateMen(dancer.left, femaleHeight);
+        } else if (dancer.getHeight() <= femaleHeight) {
+            return eradicateMen(dancer.right, femaleHeight);
+        }
+        return bTeam;
+    }
+    public void removeFoundNode(Dancer dancer) {
+        Dancer lastElement;
+        if (dancer.left == null || dancer.right == null) {
+            if (dancer.parent == null) {
+                if (!dancer.isInList()) {
+                    if (dancer.left != null) {
+                        this.root = dancer.left;
+                    } else if (dancer.right != null) {
+                        this.root = dancer.right;
+                    } else {
+                        this.root = null;
+                    }
+                }
+                return;
+            }
+            lastElement = dancer;
+        } else {
+            lastElement = successor(dancer);
+            dancer.height = lastElement.height;
+        }
+        Dancer p;
+        if (lastElement.left != null) {
+            p = lastElement.left;
+        } else {
+            p = lastElement.right;
+        }
+        if (p != null) {
+            p.parent = lastElement.parent;
+        }
+        if (lastElement.parent == null) {
+            this.root = p;
+        } else {
+            if (lastElement == lastElement.parent.left) {
+                lastElement.parent.left = p;
+            } else {
+                lastElement.parent.right = p;
+            }
+            balanceTreeRecursive(lastElement.parent);
+        }
+    }
+    public Dancer rotateLeft(Dancer dancerOriginal) {
+
+        Dancer dancerRotater = dancerOriginal.right;
+        dancerRotater.parent = dancerOriginal.parent;
+
+        dancerOriginal.right = dancerRotater.left;
+        if (dancerOriginal.right != null) {
+            dancerOriginal.right.parent = dancerOriginal;
+        }
+        dancerRotater.left = dancerOriginal;
+        dancerOriginal.parent = dancerRotater;
+
+        if (dancerRotater.parent != null) {
+            if (dancerRotater.parent.right == dancerOriginal) {
+                dancerRotater.parent.right = dancerRotater;
+            } else if (dancerRotater.parent.left == dancerOriginal) {
+                dancerRotater.parent.left = dancerRotater;
+            }
+        }
+        setBalance(dancerOriginal);
+        setBalance(dancerRotater);
+
+        return dancerRotater;
+    }
+    public Dancer rotateRight(Dancer dancerOriginal) {
+
+        Dancer dancerRotater = dancerOriginal.left;
+        dancerRotater.parent = dancerOriginal.parent;
+
+        dancerOriginal.left = dancerRotater.right;
+        if (dancerOriginal.left != null) {
+            dancerOriginal.left.parent = dancerOriginal;
+        }
+        dancerRotater.right = dancerOriginal;
+        dancerOriginal.parent = dancerRotater;
+
+        if (dancerRotater.parent != null) {
+            if (dancerRotater.parent.right == dancerOriginal) {
+                dancerRotater.parent.right = dancerRotater;
+            } else if (dancerRotater.parent.left == dancerOriginal) {
+                dancerRotater.parent.left = dancerRotater;
+            }
+        }
+        setBalance(dancerOriginal);
+        setBalance(dancerRotater);
+        return dancerRotater;
     }
 
-    private int max(int left,int right){
-        return left > right ? left : right;
+    public Dancer doubleRotateLeftRight(Dancer dancer) {
+        dancer.left = rotateLeft(dancer.left);
+        return rotateRight(dancer);
     }
-
-    private Dancer rotateWithLeftChild(Dancer leftNode){
-        Dancer rightNode = leftNode.left;
-        leftNode.left = rightNode.right;
-        rightNode.right = leftNode;
-        leftNode.treeHeight = max(height(leftNode.left),height(leftNode.right)) + 1;
-        return leftNode;
+    public Dancer doubleRotateRightLeft(Dancer dancer) {
+        dancer.right = rotateRight(dancer.right);
+        return rotateLeft(dancer);
     }
-    private Dancer doubleWithLeftChild(Dancer node){
-       node.left = rotateWithLeftChild(node.left);
-       return rotateWithLeftChild(node);
-   }
-
-    private Dancer rotateWithRightChild(Dancer rightNode){
-        Dancer leftNode = rightNode.right;
-        rightNode.right = leftNode.left;
-        leftNode.left = rightNode;
-        rightNode.treeHeight = max(height(rightNode.left),height(rightNode.right)) + 1;
-        leftNode.treeHeight = max(height(leftNode.right),rightNode.treeHeight) + 1;
-        return leftNode;
+    public Dancer successor(Dancer dancer) {
+        if (dancer.right != null) {
+            Dancer r = dancer.right;
+            while (r.left != null) {
+                r = r.left;
+            }
+            return r;
+        } else {
+            Dancer p = dancer.parent;
+            while (p != null && dancer == p.right) {
+                dancer = p;
+                p = dancer.parent;
+            }
+            return p;
+        }
     }
-    private Dancer doubleWithRightChild(Dancer node){
-       node.right = rotateWithLeftChild(node.right);
-       return rotateWithRightChild(node);
-   }
-    private int countNodes(Dancer node){
-        if(node == null)
+    private int nodeHeight(Dancer dancer) {
+        if (dancer == null) {
+            return -1;
+        }
+        if (dancer.left == null && dancer.right == null) {
             return 0;
-        else{
-            int count = 1;
-            count += countNodes(node.left);
-            count += countNodes(node.right);
-            return count;
+        } else if (dancer.left == null) {
+            return 1 + nodeHeight(dancer.right);
+        } else if (dancer.right == null) {
+            return 1 + nodeHeight(dancer.left);
+        } else {
+            return 1 + Math.max(nodeHeight(dancer.left), nodeHeight(dancer.right));
         }
     }
-    public int countNodes(){
-        return countNodes(root);
+    private void setBalance(Dancer dancer) {
+        dancer.balance = nodeHeight(dancer.right) - nodeHeight(dancer.left);
     }
-    private boolean search(Dancer node, int val){
-        boolean found = false;
-        while((node != null) && !found){
-            int rval = node.getHeight();
-            if(val < rval){
-                node = node.left;
-            }
-            else if(val > rval)
-                node = node.right;
-            else{
-                found = true;
-                break;
-            }
-            found = search(node, val);
+    final protected List<IDancer> putInOrder() {
+        ArrayList<IDancer> returnedDancers = new ArrayList<>();
+        putInOrder(root, returnedDancers);
+        return returnedDancers;
+    }
+    final protected void putInOrder(Dancer n, ArrayList<IDancer> inOrder) {
+        if (n == null) {
+            return;
+        }
+        putInOrder(n.left, inOrder);
+        inOrder.add(n.getiDancer());
 
+        try {
+            List<Dancer> Dancers = n.getEqualHeightDancers();
+            if (Dancers.size() > 0) {
+                for (Dancer d : Dancers) {
+                    inOrder.add(d.getiDancer());
+                }
+            }
+
+        } catch (Exception e) {
         }
-        return found;
+        putInOrder(n.right, inOrder);
+    }
+
+    @Override
+    public String toString() {
+        return "DancerTree{" +
+                "root=" + root +
+                '}';
     }
 }

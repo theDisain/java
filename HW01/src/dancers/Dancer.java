@@ -1,46 +1,52 @@
 package dancers;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Comparator;
 
-public class Dancer implements IDancer {
-	private int height;
-	private int ID;
-	private boolean isMale;
-	private static AtomicInteger nextId = new AtomicInteger();
-	public Dancer left = null ;
-	public Dancer right = null;
-	public int treeHeight;
-	
-	public int getHeight() {
-		return height;
-	}
+/**
+ * Created by rapka on 15.11.2015.
+ */
+public class Dancer implements IDancer{
+    private int unikaalne_id;
+    private boolean sugu;
+    private int pikkus;
 
-	public void setHeight(int height) {
-		this.height = height;
-	}
+    @Override
+    public String toString() {
+        return "Dancer{" +
+                "unikaalne_id=" + unikaalne_id +
+                ", onMees=" + sugu +
+                ", pikkus=" + pikkus +
+                '}';
+    }
 
-	public int getID() {
-		return ID;
-	}
+    @Override
+    public int getID() {return unikaalne_id;}
+    @Override
+    public boolean isMale() {return sugu;}
+    @Override
+    public int getHeight() {return pikkus;}
 
-	public void setUniqueId(int uniqueId) {
-		this.ID = ID;
-	}
+    public Dancer(int id, boolean isMale, int height) {
+        this.unikaalne_id = id;
+        this.sugu = isMale;
+        this.pikkus = height;
+    }
+    public Dancer(IDancer d) {
+        this.unikaalne_id = d.getID();
+        this.sugu = d.isMale();
+        this.pikkus = d.getHeight();
+    }
 
-	public boolean isMale() {
-		return isMale;
-	}
 
-	@Override
-	public String toString() {
-		return "Dancer [height=" + height + ", IDd=" + ID + ", isMale=" + isMale + "] \n";
-	}
-
-	public Dancer(int height, boolean isMale){
-		this.height = height;
-		this.isMale = isMale;
-		ID = nextId.incrementAndGet();
-	}
-	public Dancer(){
-	}
+    public static Comparator<IDancer> compareHeight = new Comparator<IDancer>() {
+        @Override
+        public int compare(IDancer d1, IDancer d2) {
+            if (d1.getHeight() > d2.getHeight()) return 1;
+            else if (d1.getHeight() < d2.getHeight()) return -1;
+            else {
+                if ((d1.isMale()) && (!d2.isMale())) return -1;
+                else if ((!d1.isMale()) && (d2.isMale())) return 1;
+                else return 0;
+            }
+        }};
 }

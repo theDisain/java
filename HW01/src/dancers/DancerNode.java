@@ -1,23 +1,19 @@
 package dancers;
 
 /**
- * Created by rapka on 04.10.2015.
+ * Created by rapka on 15.11.2015.
  */
 public class DancerNode {
-    DancerNode left,right;
-    int data;
+    IDancer dancer;
+    int id;
+    int dancerCount;
     int height;
+    DancerNode left, right;
 
-    public DancerNode(){
-        left = null;
-        right = null;
-        data = 0;
-        height = 0;
-    }
-    public DancerNode(int n){
-        left = null;
-        right = null;
-        data = n;
-        height = 0;
+    public DancerNode(IDancer dancer, int dancerCount) {
+        this.id = dancer.getID();
+        this.height = dancer.getHeight();
+        this.dancerCount = dancerCount;
+        this.dancer = dancer;
     }
 }
